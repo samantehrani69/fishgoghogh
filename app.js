@@ -27,13 +27,25 @@ app.use(express.json());
 // تنظیمات جلسه (session)
 app.use(session({
   secret: process.env.SESSION_SECRET || 'payroll-system-secret-key',
-  resave: false,
-  saveUninitialized: false,
+  resave: true,
+  saveUninitialized: true,
   cookie: { 
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 24 * 60 * 60 * 1000 // 24 ساعت
+    // Don't use secure cookies except in production with HTTPS
+    secure: false,
+    maxAge: 24 * 60 * 60 * 1000, // 24 ساعت
+    sameSite: 'lax'
   }
 }));
+
+// اضافه کردن میدلور برای ثبت وضعیت جلسه در لاگ
+app.use((req, res, next) => {
+  // برای دیباگ جلسه
+  if (req.session) {
+    console.log('Session ID:', req.session.id);
+    console.log('Session User:', req.session.user ? JSON.stringify(req.session.user) : 'No user');
+  }
+  next();
+});
 
 // تنظیمات آپلود فایل
 const storage = multer.diskStorage({
@@ -174,14 +186,20 @@ app.post('/auth/login', (req, res) => {
     employeeId: user.employeeId
   };
   
-  console.log('ورود موفق. انتقال به داشبورد...');
-  
-  // هدایت کاربر بر اساس نقش
-  if (user.role === 'admin') {
-    return res.redirect('/admin/dashboard');
-  } else {
-    return res.redirect('/employee/dashboard');
-  }
+  // Force session to be saved before redirecting
+  req.session.save(err => {
+    if (err) {
+      console.error('خطا در ذخیره جلسه:', err);
+      return res.redirect('/auth/login?error=2');
+    }
+    
+    console.log('ورود موفق. انتقال به داشبورد...', req.session.user);
+    
+    // هدایت کاربر بر اساس نقش
+    const redirectUrl = user.role === 'admin' ? '/admin/dashboard' : '/employee/dashboard';
+    console.log('URL نهایی انتقال:', redirectUrl);
+    return res.redirect(redirectUrl);
+  });
 });
 
 // روت خروج کاربر
