@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>فیش حقوقی - سیستم مدیریت فیش حقوقی</title>
+  <style>
+    body {
+      font-family: 'Tahoma', sans-serif;
+      background-color: #f4f7f9;
+      margin: 0;
+      padding: 0;
+      direction: rtl;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #2c3e50;
+      color: white;
+      padding: 10px 20px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+    }
+    .user-info span {
+      margin-left: 10px;
+    }
+    .logout-btn, .back-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      margin-left: 10px;
+    }
+    .back-btn {
+      background: #3498db;
+    }
+    .card {
+      background: white;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .payslip-header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #eee;
+    }
+    .payslip-header h2 {
+      margin-bottom: 5px;
+      color: #2c3e50;
+    }
+    .payslip-header p {
+      color: #7f8c8d;
+      margin: 5px 0;
+    }
+    .payslip-section {
+      margin-bottom: 20px;
+    }
+    .payslip-section h3 {
+      border-bottom: 1px solid #eee;
+      padding-bottom: 5px;
+      color: #3498db;
+    }
+    .payslip-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 20px;
+    }
+    .payslip-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed #eee;
+    }
+    .payslip-row strong {
+      color: #2c3e50;
+    }
+    .payslip-row .value {
+      font-weight: bold;
+    }
+    .payslip-final {
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 2px solid #eee;
+      text-align: center;
+    }
+    .payslip-final .final-salary {
+      font-size: 20px;
+      color: #16a085;
+      font-weight: bold;
+    }
+    .print-btn {
+      background: #27ae60;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
+      display: block;
+      width: 100%;
+    }
+    @media print {
+      body {
+        background-color: white;
+      }
+      header, .print-btn, .back-btn, .logout-btn {
+        display: none;
+      }
+      .container {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      .card {
+        box-shadow: none;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>سیستم مدیریت فیش حقوقی</h1>
+    <div class="user-info">
+      <span><%= user.fullName %></span>
+      <a href="/employee/dashboard" class="back-btn">بازگشت</a>
+      <a href="/auth/logout" class="logout-btn">خروج</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <div class="payslip-header">
+        <h2>فیش حقوقی</h2>
+        <p><%= getMonthName(payroll.month) %> ماه <%= payroll.year %></p>
+        <p>تاریخ صدور: <%= formatDate(payroll.payrollDate) %></p>
+      </div>
+      
+      <div class="payslip-section">
+        <h3>اطلاعات کارمند</h3>
+        <div class="payslip-grid">
+          <div class="payslip-row">
+            <strong>نام:</strong>
+            <span class="value"><%= payroll.firstName %></span>
+          </div>
+          <div class="payslip-row">
+            <strong>نام خانوادگی:</strong>
+            <span class="value"><%= payroll.lastName %></span>
+          </div>
+          <div class="payslip-row">
+            <strong>کد پرسنلی:</strong>
+            <span class="value"><%= payroll.employeeId %></span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="payslip-section">
+        <h3>جزئیات حقوق</h3>
+        <div class="payslip-grid">
+          <div class="payslip-row">
+            <strong>حقوق پایه روزانه:</strong>
+            <span class="value"><%= formatCurrency(payroll.dailySalary) %> تومان</span>
+          </div>
+          <div class="payslip-row">
+            <strong>تعداد روزهای کاری:</strong>
+            <span class="value"><%= payroll.workingDays %> روز</span>
+          </div>
+          <div class="payslip-row">
+            <strong>تعداد روزهای مرخصی:</strong>
+            <span class="value"><%= payroll.leaveDays %> روز</span>
+          </div>
+          <div class="payslip-row">
+            <strong>حقوق ماهانه (قبل از کسورات):</strong>
+            <span class="value"><%= formatCurrency(payroll.monthlySalary) %> تومان</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="payslip-section">
+        <h3>کسورات</h3>
+        <div class="payslip-grid">
+          <div class="payslip-row">
+            <strong>حق بیمه:</strong>
+            <span class="value"><%= formatCurrency(payroll.insuranceDeduction) %> تومان</span>
+          </div>
+          <div class="payslip-row">
+            <strong>مالیات:</strong>
+            <span class="value"><%= formatCurrency(payroll.taxDeduction) %> تومان</span>
+          </div>
+          <div class="payslip-row">
+            <strong>جمع کسورات:</strong>
+            <span class="value"><%= formatCurrency(payroll.insuranceDeduction + payroll.taxDeduction) %> تومان</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="payslip-final">
+        <p>حقوق خالص پرداختی:</p>
+        <div class="final-salary"><%= formatCurrency(payroll.finalSalary) %> تومان</div>
+      </div>
+      
+      <button class="print-btn" onclick="window.print()">چاپ فیش حقوقی</button>
+    </div>
+  </div>
+</body>
+</html>

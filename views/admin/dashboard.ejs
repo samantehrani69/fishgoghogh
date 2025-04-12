@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>داشبورد مدیر - سیستم مدیریت فیش حقوقی</title>
+  <style>
+    body {
+      font-family: 'Tahoma', sans-serif;
+      background-color: #f4f7f9;
+      margin: 0;
+      padding: 0;
+      direction: rtl;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #2c3e50;
+      color: white;
+      padding: 10px 20px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+    }
+    .user-info span {
+      margin-left: 10px;
+    }
+    .logout-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .card {
+      background: white;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    h2 {
+      color: #2c3e50;
+      margin-top: 0;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input[type="file"], input[type="text"], input[type="password"], select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button[type="submit"] {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button[type="submit"]:hover {
+      background: #2980b9;
+    }
+    .employee-list {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .employee-list th, .employee-list td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: right;
+    }
+    .employee-list th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+    .employee-list tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .error-message {
+      color: #f44336;
+      margin-top: 15px;
+    }
+    .success-message {
+      color: #4CAF50;
+      margin-top: 15px;
+    }
+    .download-btn {
+      background: #2ecc71;
+      color: white;
+      text-decoration: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 10px;
+    }
+    .action-btn {
+      padding: 6px 10px;
+      border-radius: 4px;
+      color: white;
+      text-decoration: none;
+      font-size: 12px;
+      margin-right: 5px;
+      cursor: pointer;
+      border: none;
+    }
+    .edit-btn {
+      background-color: #3498db;
+    }
+    .delete-btn {
+      background-color: #e74c3c;
+    }
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+    }
+    .tab {
+      padding: 10px 20px;
+      background-color: #f4f7f9;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+    .tab.active {
+      background-color: white;
+      border-bottom-color: white;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>سیستم مدیریت فیش حقوقی</h1>
+    <div class="user-info">
+      <span><%= user.fullName %> (مدیر)</span>
+      <a href="/auth/logout" class="logout-btn">خروج</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <% if (message) { %>
+      <% if (message.type === 'error') { %>
+        <div class="error-message"><%= message.text %></div>
+      <% } else if (message.type === 'success') { %>
+        <div class="success-message"><%= message.text %></div>
+      <% } %>
+    <% } %>
+    
+    <div class="tabs">
+      <div class="tab active" onclick="openTab(event, 'excel-upload')">آپلود فایل اکسل</div>
+      <div class="tab" onclick="openTab(event, 'user-management')">مدیریت کاربران</div>
+      <div class="tab" onclick="openTab(event, 'change-password')">تغییر رمز عبور</div>
+    </div>
+    
+    <div id="excel-upload" class="tab-content active">
+      <div class="card">
+        <h2>آپلود اطلاعات کارمندان</h2>
+        <p>فایل اکسل حاوی اطلاعات کارمندان را آپلود کنید. ستون‌های فایل باید شامل: نام کاربری، رمز عبور، نام و نام خانوادگی، و کد پرسنلی باشد.</p>
+        <form action="/admin/upload/employees" method="POST" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="employees-file">انتخاب فایل اکسل:</label>
+            <input type="file" id="employees-file" name="file" accept=".xlsx, .xls" required>
+          </div>
+          <button type="submit">آپلود فایل</button>
+        </form>
+        <a href="/admin/generate-employee-template" class="download-btn">دانلود قالب فایل کارمندان</a>
+      </div>
+      
+      <div class="card">
+        <h2>آپلود اطلاعات فیش حقوقی</h2>
+        <p>فایل اکسل حاوی اطلاعات فیش‌های حقوقی را آپلود کنید. ستون‌های فایل باید شامل: کد پرسنلی، حقوق روزانه، روزهای کاری، مرخصی، ماه و سال باشد.</p>
+        <form action="/admin/upload/payrolls" method="POST" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="payrolls-file">انتخاب فایل اکسل:</label>
+            <input type="file" id="payrolls-file" name="file" accept=".xlsx, .xls" required>
+          </div>
+          <button type="submit">آپلود فایل</button>
+        </form>
+        <a href="/admin/generate-payroll-template" class="download-btn">دانلود قالب فایل فیش حقوقی</a>
+      </div>
+    </div>
+    
+    <div id="user-management" class="tab-content">
+      <div class="card">
+        <h2>افزودن کاربر جدید</h2>
+        <form action="/admin/users/add" method="POST">
+          <div class="form-group">
+            <label for="new-username">نام کاربری:</label>
+            <input type="text" id="new-username" name="username" required>
+          </div>
+          <div class="form-group">
+            <label for="new-password">رمز عبور:</label>
+            <input type="password" id="new-password" name="password" required>
+          </div>
+          <div class="form-group">
+            <label for="new-fullname">نام و نام خانوادگی:</label>
+            <input type="text" id="new-fullname" name="fullName" required>
+          </div>
+          <div class="form-group">
+            <label for="new-employeeid">کد پرسنلی:</label>
+            <input type="text" id="new-employeeid" name="employeeId" required>
+          </div>
+          <div class="form-group">
+            <label for="new-role">نقش کاربر:</label>
+            <select id="new-role" name="role" required>
+              <option value="employee">کارمند</option>
+              <option value="admin">مدیر</option>
+            </select>
+          </div>
+          <button type="submit">افزودن کاربر</button>
+        </form>
+      </div>
+      
+      <div class="card">
+        <h2>لیست کاربران</h2>
+        <table class="employee-list">
+          <thead>
+            <tr>
+              <th>کد پرسنلی</th>
+              <th>نام و نام خانوادگی</th>
+              <th>نام کاربری</th>
+              <th>نقش</th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (users && users.length > 0) { %>
+              <% users.forEach(user => { %>
+                <tr>
+                  <td><%= user.employeeId %></td>
+                  <td><%= user.fullName %></td>
+                  <td><%= user.username %></td>
+                  <td><%= user.role === 'admin' ? 'مدیر' : 'کارمند' %></td>
+                  <td>
+                    <% if (user._id !== currentUser._id) { %>
+                      <form action="/admin/users/delete" method="POST" style="display:inline;" onsubmit="return confirm('آیا از حذف این کاربر اطمینان دارید؟');">
+                        <input type="hidden" name="userId" value="<%= user._id %>">
+                        <button type="submit" class="action-btn delete-btn">حذف</button>
+                      </form>
+                    <% } else { %>
+                      <span style="color: #999; font-size: 12px;">کاربر فعلی</span>
+                    <% } %>
+                  </td>
+                </tr>
+              <% }); %>
+            <% } else { %>
+              <tr>
+                <td colspan="5">هیچ کاربری یافت نشد.</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div id="change-password" class="tab-content">
+      <div class="card">
+        <h2>تغییر رمز عبور</h2>
+        <form action="/admin/change-password" method="POST">
+          <div class="form-group">
+            <label for="current-password">رمز عبور فعلی:</label>
+            <input type="password" id="current-password" name="currentPassword" required>
+          </div>
+          <div class="form-group">
+            <label for="new-password">رمز عبور جدید:</label>
+            <input type="password" id="new-password" name="newPassword" required>
+          </div>
+          <div class="form-group">
+            <label for="confirm-password">تکرار رمز عبور جدید:</label>
+            <input type="password" id="confirm-password" name="confirmPassword" required>
+          </div>
+          <button type="submit">تغییر رمز عبور</button>
+        </form>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>لیست کارمندان</h2>
+      <% if (employees && employees.length > 0) { %>
+        <table class="employee-list">
+          <thead>
+            <tr>
+              <th>کد پرسنلی</th>
+              <th>نام و نام خانوادگی</th>
+              <th>نام کاربری</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% employees.forEach(employee => { %>
+              <tr>
+                <td><%= employee.employeeId %></td>
+                <td><%= employee.fullName %></td>
+                <td><%= employee.username %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p>هیچ کارمندی ثبت نشده است.</p>
+      <% } %>
+    </div>
+  </div>
+  
+  <script>
+    function openTab(evt, tabName) {
+      // Hide all tab contents
+      var tabContents = document.getElementsByClassName("tab-content");
+      for (var i = 0; i < tabContents.length; i++) {
+        tabContents[i].className = tabContents[i].className.replace(" active", "");
+      }
+      
+      // Remove active class from all tabs
+      var tabs = document.getElementsByClassName("tab");
+      for (var i = 0; i < tabs.length; i++) {
+        tabs[i].className = tabs[i].className.replace(" active", "");
+      }
+      
+      // Show the current tab and add active class
+      document.getElementById(tabName).className += " active";
+      evt.currentTarget.className += " active";
+    }
+  </script>
+</body>
+</html>

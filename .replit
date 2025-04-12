@@ -1,0 +1,24 @@
+run = "npm start"
+entrypoint = "app.js"
+hidden = [".config", ".git", ".github"]
+
+[nix]
+channel = "stable-22_11"
+
+[env]
+PORT = "3000"
+NODE_ENV = "production"
+
+[packager]
+language = "nodejs"
+
+[packager.features]
+packageSearch = true
+guessImports = true
+
+[languages.js]
+pattern = "**/*.js"
+syntax = "javascript"
+
+[languages.js.languageServer]
+start = ["typescript-language-server", "--stdio"]

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>صفحه یافت نشد - سیستم مدیریت فیش حقوقی</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .error-container {
+      text-align: center;
+      padding: 50px 20px;
+    }
+    .error-code {
+      font-size: 120px;
+      color: #e74c3c;
+      margin: 0;
+      line-height: 1;
+    }
+    .error-message {
+      font-size: 24px;
+      color: #2c3e50;
+      margin: 20px 0;
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 30px;
+      background: #3498db;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card error-container">
+      <h1 class="error-code">404</h1>
+      <p class="error-message">صفحه مورد نظر یافت نشد</p>
+      <p>صفحه‌ای که به دنبال آن بودید پیدا نشد یا حذف شده است.</p>
+      <% if (user && user.role === 'admin') { %>
+        <a href="/admin/dashboard" class="back-link">بازگشت به داشبورد</a>
+      <% } else if (user) { %>
+        <a href="/employee/dashboard" class="back-link">بازگشت به داشبورد</a>
+      <% } else { %>
+        <a href="/" class="back-link">بازگشت به صفحه ورود</a>
+      <% } %>
+    </div>
+  </div>
+</body>
+</html>
