@@ -17,10 +17,7 @@ const PORT = process.env.PORT || 3000;
 // تنظیمات موتور قالب EJS
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-<<<<<<< HEAD
 console.log('مسیر پوشه views:', path.join(__dirname, 'views')); // برای دیباگ
-=======
->>>>>>> origin/main
 
 // میدلورها
 app.use(express.static(path.join(__dirname, 'public')));

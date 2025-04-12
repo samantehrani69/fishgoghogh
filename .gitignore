@@ -6,13 +6,10 @@ yarn-error.log
 
 # Environment variables
 .env
-<<<<<<< HEAD
 .env.local
 .env.development
 .env.test
 .env.production
-=======
->>>>>>> origin/main
 
 # Uploaded files (except sample files)
 uploads/*
@@ -26,18 +23,14 @@ Thumbs.db
 # Logs
 logs
 *.log
-<<<<<<< HEAD
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-=======
->>>>>>> origin/main
 
 # Runtime data
 pids
 *.pid
 *.seed
-<<<<<<< HEAD
 *.pid.lock
 
 # Ignore large files
@@ -45,6 +38,3 @@ pids
 *.zip
 *.tar
 *.gz
-=======
-*.pid.lock
->>>>>>> origin/main
